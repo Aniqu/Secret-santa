@@ -942,51 +942,44 @@
             </div>
 
             <div class="result-display" id="userResult">
-                <div class="ticket-container">
-                    <div class="ticket-left">
-                        <div class="snowflake-decoration">❄</div>
-                        <div class="snowflake-decoration">❄</div>
-                        <div class="snowflake-decoration">❄</div>
-                        <div class="snowflake-decoration">❄</div>
+                <!-- Simple, Clean Reveal Design -->
+                <div style="background: linear-gradient(135deg, #165e3d 0%, #0d3d26 100%); padding: 50px 40px; border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.3); text-align: center; border: 4px solid #ffd700;">
 
-                        <div class="ticket-title">Slaptas<br>Kalėdų<br>Senelis</div>
+                    <!-- Top Emoji -->
+                    <div style="font-size: 6em; margin-bottom: 20px;">🎅</div>
 
-                        <div class="santa-image-container">
-                            <img id="santaImage" class="santa-image" src="" alt="Secret Santa">
-                            <img class="santa-hat" src="santa-hat.png" alt="Santa Hat">
-                            <img class="santa-beard" src="santa-beard.png" alt="Santa Beard">
-                        </div>
+                    <!-- Title -->
+                    <h2 style="color: #ffd700; font-size: 2.5em; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                        Tavo Slaptasis Kalėdų Senelis
+                    </h2>
 
-                        <p style="font-size: 1.1em; color: #165e3d; font-weight: 600; margin-top: 10px;">🤫 Laikykite paslaptyje!</p>
+                    <!-- Divider -->
+                    <div style="width: 80px; height: 3px; background: #ffd700; margin: 20px auto;"></div>
 
-                        <button class="btn btn-secondary" onclick="downloadTicket()" style="margin-top: 20px; font-size: 0.9em; padding: 10px 20px; width: auto;">
-                            📥 Atsisiųsti bilieta
-                        </button>
-
-                        <div class="ticket-divider"></div>
+                    <!-- Name Box -->
+                    <div style="background: white; padding: 40px 30px; border-radius: 15px; margin: 30px 0; box-shadow: 0 8px 25px rgba(0,0,0,0.2);">
+                        <p style="color: #999; font-size: 0.9em; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">Dovanosi</p>
+                        <h1 id="pickedName" style="color: #c41e3a; font-size: 3em; margin: 0; font-weight: 700;"></h1>
                     </div>
 
-                    <div class="ticket-right">
-                        <div class="ticket-entry">
-                            <div class="entry-label">ENTRY NO :</div>
-                            <div class="entry-number" id="entryNumber">123456</div>
-                        </div>
-
-                        <div class="ticket-details">
-                            <div class="detail-row">
-                                <div class="detail-label">VARDAS :</div>
-                                <div class="detail-value" id="pickedName"></div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">ŠĮMET :</div>
-                                <div class="detail-value" id="pickedBehavior"></div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-label">NORAS :</div>
-                                <div class="detail-value" id="pickedWish"></div>
-                            </div>
-                        </div>
+                    <!-- Gift Wish Box -->
+                    <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 12px; border: 2px dashed rgba(255,255,255,0.3); margin-top: 25px;">
+                        <p style="color: #ffd700; font-size: 1em; margin-bottom: 12px; font-weight: 600;">🎁 Dovanų noras:</p>
+                        <p id="pickedWish" style="color: white; font-size: 1.3em; line-height: 1.6; margin: 0;"></p>
                     </div>
+
+                    <!-- Bottom Message -->
+                    <div style="margin-top: 35px; padding: 20px; background: rgba(255,215,0,0.1); border-radius: 10px; border-left: 4px solid #ffd700;">
+                        <p style="color: white; font-size: 1.1em; margin: 0;">
+                            🤫 <strong>Laikyk paslaptyje!</strong> Niekas neturi sužinoti, kam dovanosi.
+                        </p>
+                    </div>
+
+                    <!-- Christmas Tree Decoration -->
+                    <div style="margin-top: 30px; font-size: 2em;">
+                        ❄️ 🎄 ❄️
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1370,19 +1363,10 @@
         // Show user result
         function showUserResult(assignedName) {
             const assignedPerson = participants.find(p => p.name === assignedName);
-            const currentUserId = localStorage.getItem('currentUserId');
-            const currentUser = participants.find(p => p.id === currentUserId);
-
-            // Set the entry number (use user's ID hash)
-            const entryNumber = Math.abs(simpleHash(currentUserId)).toString().substr(0, 6).padStart(6, '0');
-            document.getElementById('entryNumber').textContent = entryNumber;
-
-            // Generate Christmas info for the assigned person
             const christmasInfo = generateChristmasInfo(assignedName);
 
-            // Set the assigned person's details
+            // Set the assigned person's name
             document.getElementById('pickedName').textContent = assignedPerson?.name || assignedName;
-            document.getElementById('pickedBehavior').textContent = christmasInfo.behavior;
 
             // Use their actual gift idea if available, otherwise use random wish
             const giftWish = assignedPerson?.giftIdea && assignedPerson.giftIdea.trim() !== ''
@@ -1390,15 +1374,7 @@
                 : christmasInfo.wish;
             document.getElementById('pickedWish').textContent = giftWish;
 
-            // Set the image (use gender-based avatar)
-            const santaImage = document.getElementById('santaImage');
-            if (assignedPerson?.image) {
-                santaImage.src = assignedPerson.image;
-            } else {
-                // Default placeholder image (use a generic avatar)
-                santaImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"%3E%3Ccircle cx="100" cy="100" r="100" fill="%23e0e0e0"/%3E%3Ccircle cx="100" cy="80" r="40" fill="%23999"/%3E%3Cellipse cx="100" cy="160" rx="60" ry="50" fill="%23999"/%3E%3C/svg%3E';
-            }
-
+            // Show the result
             document.getElementById('userResult').classList.add('active');
         }
 

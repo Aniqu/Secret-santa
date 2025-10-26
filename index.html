@@ -991,19 +991,54 @@
         }
 
         // Check URL parameters
-        function checkURLParams() {
+        async function checkURLParams() {
             const urlParams = new URLSearchParams(window.location.search);
             const userId = urlParams.get('id');
             const stage = urlParams.get('stage');
 
             if (userId) {
-                // User link - show user login
-                showSection('userLoginSection');
+                // User link - auto login without password
                 localStorage.setItem('currentUserId', userId);
-                localStorage.setItem('currentStage', stage || '2'); // Default to stage 2 if not specified
+                localStorage.setItem('currentStage', stage || '2');
+                await autoLoginUser();
             } else {
                 // No params - show admin login
                 showSection('adminLoginSection');
+            }
+        }
+
+        // Auto login user without password
+        async function autoLoginUser() {
+            const userId = localStorage.getItem('currentUserId');
+            const stage = localStorage.getItem('currentStage') || '2';
+
+            await loadData();
+            const participant = participants.find(p => p.id === userId);
+
+            if (participant) {
+                // Route to appropriate stage
+                if (stage === '1') {
+                    // Stage 1: Gift idea input
+                    showSection('stage1Section');
+                    document.getElementById('stage1UserName').textContent = participant.name;
+                    if (participant.stage1Complete && participant.giftIdea) {
+                        document.getElementById('giftIdeaInput').value = participant.giftIdea;
+                    }
+                } else {
+                    // Stage 2: Secret Santa reveal
+                    showSection('userDashboard');
+                    document.getElementById('userName').textContent = participant.name;
+
+                    // Check if already revealed
+                    if (participant.revealed) {
+                        document.getElementById('revealBtn').style.display = 'none';
+                        showUserResult(participant.assignedTo);
+                    }
+                }
+            } else {
+                showSection('userLoginSection');
+                document.getElementById('userLoginError').textContent = 'Neteisingas nuoroda!';
+                document.getElementById('userLoginError').classList.add('active');
             }
         }
 

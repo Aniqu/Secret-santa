@@ -1668,17 +1668,7 @@
                 console.log('%c', devtools);
             }, 500);
 
-            // 6. Disable text selection
-            document.body.style.userSelect = 'none';
-            document.body.style.webkitUserSelect = 'none';
-            document.body.style.mozUserSelect = 'none';
-            document.body.style.msUserSelect = 'none';
-
-            // 7. Disable drag
-            document.addEventListener('dragstart', function(e) {
-                e.preventDefault();
-                return false;
-            });
+            // Text selection and drag are now enabled for better user experience
 
             // 8. Clear console periodically
             setInterval(function() {

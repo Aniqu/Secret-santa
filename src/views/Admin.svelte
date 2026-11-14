@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { Check, Copy, Eye, EyeOff, LogOut, Plus, Shuffle, Trash2 } from '@lucide/svelte';
+  import { Check, Copy, Download, Eye, EyeOff, LogOut, Plus, Shuffle, Trash2 } from '@lucide/svelte';
   import { api, copyText } from '../lib/api.js';
 
   const KEY = 'sks-admin';
@@ -102,6 +102,35 @@
     }
   }
 
+  // ---------- Nuorodų eksportas ----------
+
+  const stageTitle = (stage) => (stage === 1 ? '1 etapas – noras' : '2 etapas – atskleidimas');
+
+  function linksText(stage) {
+    const rows = participants.map((p) => `${p.name}: ${link(p.id, stage)}`);
+    return [`Slaptasis Kalėdų Senelis · ${stageTitle(stage)}`, '', ...rows].join('\n');
+  }
+
+  function copyAll(stage) {
+    copy(`all-${stage}`, linksText(stage));
+  }
+
+  // CSV su kabliataškiais ir BOM – taip jį teisingai atidaro lietuviška „Excel“.
+  function downloadCsv() {
+    const cell = (v) => `"${String(v).replaceAll('"', '""')}"`;
+    const rows = [
+      ['Vardas', '1 etapas (noras)', '2 etapas (atskleidimas)'],
+      ...participants.map((p) => [p.name, link(p.id, 1), link(p.id, 2)]),
+    ];
+    const csv = '﻿' + rows.map((r) => r.map(cell).join(';')).join('\r\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'slaptasis-kaledu-senelis-nuorodos.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   onMount(() => {
     const saved = sessionStorage.getItem(KEY);
     if (saved) {
@@ -166,6 +195,20 @@
           <button class="btn ghost small" onclick={() => (showSecrets = !showSecrets)} aria-pressed={showSecrets}>
             {#if showSecrets}<EyeOff class="icon" /> Slėpti rezultatus{:else}<Eye class="icon" /> Rodyti, kas kam dovanoja{/if}
           </button>
+        </div>
+
+        <div class="export">
+          <h2>Visų dalyvių nuorodos</h2>
+          <p class="how">Nuorodos asmeninės – kiekvienam dalyviui siųskite tik jo nuorodą, ne visą sąrašą.</p>
+          <div class="export-actions">
+            {#each [1, 2] as stage}
+              {@const key = `all-${stage}`}
+              <button class="btn small" class:pine={copied === key} onclick={() => copyAll(stage)}>
+                {#if copied === key}<Check class="icon" /> Nukopijuota{:else}<Copy class="icon" /> Kopijuoti {stage} etapo nuorodas{/if}
+              </button>
+            {/each}
+            <button class="btn ghost small" onclick={downloadCsv}><Download class="icon" /> Atsisiųsti sąrašą (CSV)</button>
+          </div>
         </div>
 
         <ul class="list">
@@ -347,6 +390,26 @@
   .how {
     font-size: 0.95rem;
     color: var(--ink-soft);
+  }
+
+  .export {
+    display: grid;
+    gap: 0.6rem;
+    padding: 1rem;
+    border: 1.5px dashed rgba(43, 32, 26, 0.4);
+    border-radius: 8px;
+  }
+
+  .export h2 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .export-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
   }
 
   .list {

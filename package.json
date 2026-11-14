@@ -1,20 +1,27 @@
 {
-  "name": "secret-santa-app",
-  "version": "1.0.0",
-  "description": "Secret Santa web application with shared data storage",
-  "main": "server.js",
+  "name": "slaptasis-kaledu-senelis",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Slaptasis Kalėdų Senelis – dovanų mainų programėlė",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "concurrently -n api,web -c green,red \"node --watch server/index.js\" \"vite\"",
+    "build": "vite build",
+    "start": "node server/index.js",
+    "test": "node --test"
   },
-  "keywords": ["secret-santa", "christmas", "gift-exchange"],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
+    "@hono/node-server": "^2.1.8",
+    "hono": "^4.13.18"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource/caveat": "^5.3.0",
+    "@fontsource/courier-prime": "^5.3.0",
+    "@lucide/svelte": "^1.73.0",
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "concurrently": "^10.0.7",
+    "svelte": "^5.57.3",
+    "vite": "^8.3.8"
   }
 }
